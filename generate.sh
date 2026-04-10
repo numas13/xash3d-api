@@ -19,6 +19,19 @@ CFLAGS+=" -Ixash3d-fwgs/public"
 CFLAGS+=" -Ixash3d-fwgs/pm_shared"
 CFLAGS+=" -Ixash3d-fwgs/filesystem"
 CFLAGS+=" -Ixash3d-fwgs/engine"
+library_suffix_path="3rdparty/library_suffix"
+CFLAGS+=" -Ixash3d-fwgs/$library_suffix_path/include"
+
+if [ ! -f "$root/xash3d-fwgs/wscript" ]; then
+    git submodule update --init --depth=1 xash3d-fwgs
+fi
+
+# library_suffix required since 0dfeea521396c6c99591bb5a32240f7b663ad1e8
+if [ ! -f "$root/xash3d-fwgs/$library_suffix_path/wscript" ]; then
+    pushd "$root/xash3d-fwgs"
+    git submodule update --init --depth=1 "$library_suffix_path"
+    popd
+fi
 
 function generate() {
     wrapper_h="$1"
@@ -36,7 +49,7 @@ function generate() {
         --use-array-pointers-in-arguments \
         --default-macro-constant-type signed \
         --blocklist-file "/usr/.*" \
-        --blocklist-file "xash3d-fwgs/public/build.h" \
+        --blocklist-file "xash3d-fwgs/$library_suffix_path/include/build.h" \
         --blocklist-item "NUM_AMBIENTS" \
         --blocklist-type "mnode_s" \
         --blocklist-type "mnode_s__.*" \
@@ -88,6 +101,7 @@ generate "wrapper-tri-api.h" "src/generated/tri_api.rs" \
 
 generate "wrapper-render-api.h" "src/generated/render_api.rs" \
     --no-recursive-allowlist \
+    --blocklist-type "dlight_s" \
     --allowlist-file "xash3d-fwgs/common/lightstyle.h" \
     --allowlist-file "xash3d-fwgs/common/render_api.h"
 

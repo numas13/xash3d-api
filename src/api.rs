@@ -71,3 +71,11 @@ pub mod phys {
         ) -> core::ffi::c_int,
     >;
 }
+
+#[allow(clippy::missing_safety_doc)]
+#[cfg(feature = "sound-api")]
+pub mod sound {
+    use crate::common::*;
+
+    include!("generated/sound_api.rs");
+}

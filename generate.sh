@@ -18,7 +18,13 @@ CFLAGS+=" -Ixash3d-fwgs/common"
 CFLAGS+=" -Ixash3d-fwgs/public"
 CFLAGS+=" -Ixash3d-fwgs/pm_shared"
 CFLAGS+=" -Ixash3d-fwgs/filesystem"
+
 CFLAGS+=" -Ixash3d-fwgs/engine"
+# sound-api: common.h included in engine/platform/platform.h
+CFLAGS+=" -Ixash3d-fwgs/engine/common"
+# sound-api: avi/avi.h included in engine/common/common.h
+CFLAGS+=" -Ixash3d-fwgs/engine/client"
+
 library_suffix_path="3rdparty/library_suffix"
 CFLAGS+=" -Ixash3d-fwgs/$library_suffix_path/include"
 
@@ -120,6 +126,11 @@ generate "wrapper-efx-api.h" "src/generated/efx_api.rs" \
 generate "wrapper-phys-api.h" "src/generated/phys_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/engine/physint.h"
+
+generate "wrapper-sound-api.h" "src/generated/sound_api.rs" \
+    --no-recursive-allowlist \
+    --allowlist-type "wavdata_[st]" \
+    --allowlist-file "xash3d-fwgs/common/sound_api.h"
 
 ##############################################################################
 # dlls

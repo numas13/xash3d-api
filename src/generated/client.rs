@@ -617,18 +617,6 @@ pub struct cl_enginefuncs_s {
 pub type cl_enginefunc_t = cl_enginefuncs_s;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct sound_api_s {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sound_interface_s {
-    _unused: [u8; 0],
-}
-pub type sound_api_t = sound_api_s;
-pub type sound_interface_t = sound_interface_s;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct cldll_func_s {
     pub pfnInitialize: ::core::option::Option<
         unsafe extern "C" fn(

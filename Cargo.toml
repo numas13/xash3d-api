@@ -36,6 +36,7 @@ client = [
     "tri-api",
     "event-api",
     "efx-api",
+    "sound-api",
 ]
 ## The server feature enables bindings to a server DLL
 server = [
@@ -74,6 +75,7 @@ phys-api = [
     "render-api",
     "server",
 ]
+sound-api = []
 
 [package.metadata.docs.rs]
 all-features = true

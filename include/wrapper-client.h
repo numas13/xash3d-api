@@ -6,6 +6,7 @@
 #include "wrapper-tri-api.h"
 #include "wrapper-event-api.h"
 #include "wrapper-efx-api.h"
+#include "wrapper-sound-api.h"
 
 #include "common/ivoicetweak.h"
 #include "common/demo_api.h"

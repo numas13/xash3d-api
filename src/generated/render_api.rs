@@ -80,6 +80,7 @@ pub const texFlags_t_TF_BORDER: texFlags_t = 524288;
 pub const texFlags_t_TF_TEXTURE_3D: texFlags_t = 1048576;
 pub const texFlags_t_TF_ATLAS_PAGE: texFlags_t = 2097152;
 pub const texFlags_t_TF_ALPHACONTRAST: texFlags_t = 4194304;
+pub const texFlags_t_TF_PREMULTIPLIED: texFlags_t = 8388608;
 pub const texFlags_t_TF_IMG_UPLOADED: texFlags_t = 33554432;
 pub const texFlags_t_TF_ARB_FLOAT: texFlags_t = 67108864;
 pub const texFlags_t_TF_NOCOMPARE: texFlags_t = 134217728;

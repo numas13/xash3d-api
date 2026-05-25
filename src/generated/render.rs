@@ -10,7 +10,7 @@ pub const DXT_ENCODE_NORMAL_AG_STEREO: i32 = 6662;
 pub const DXT_ENCODE_NORMAL_AG_PARABOLOID: i32 = 6663;
 pub const DXT_ENCODE_NORMAL_AG_QUARTIC: i32 = 6664;
 pub const DXT_ENCODE_NORMAL_AG_AZIMUTHAL: i32 = 6665;
-pub const REF_API_VERSION: i32 = 13;
+pub const REF_API_VERSION: i32 = 17;
 pub const VID_SCREENSHOT: i32 = 0;
 pub const VID_LEVELSHOT: i32 = 1;
 pub const VID_MINISHOT: i32 = 2;
@@ -96,6 +96,7 @@ pub const ilFlags_t_IL_OVERVIEW: ilFlags_t = 64;
 pub const ilFlags_t_IL_LOAD_PLAYER_DECAL: ilFlags_t = 128;
 pub const ilFlags_t_IL_KTX2_RAW: ilFlags_t = 256;
 pub const ilFlags_t_IL_ALLOW_WAD3_LUMA: ilFlags_t = 512;
+pub const ilFlags_t_IL_HOST_ENDIAN: ilFlags_t = 1024;
 pub type ilFlags_t = ::core::ffi::c_uint;
 pub const imgFlags_t_IMAGE_CUBEMAP: imgFlags_t = 1;
 pub const imgFlags_t_IMAGE_HAS_ALPHA: imgFlags_t = 2;
@@ -108,6 +109,8 @@ pub const imgFlags_t_IMAGE_DDS_FORMAT: imgFlags_t = 128;
 pub const imgFlags_t_IMAGE_MULTILAYER: imgFlags_t = 256;
 pub const imgFlags_t_IMAGE_ONEBIT_ALPHA: imgFlags_t = 512;
 pub const imgFlags_t_IMAGE_QUAKEPAL: imgFlags_t = 1024;
+pub const imgFlags_t_IMAGE_PREMULTIPLIED: imgFlags_t = 2048;
+pub const imgFlags_t_IMAGE_PLAYERDECAL: imgFlags_t = 4096;
 pub const imgFlags_t_IMAGE_FLIP_X: imgFlags_t = 65536;
 pub const imgFlags_t_IMAGE_FLIP_Y: imgFlags_t = 131072;
 pub const imgFlags_t_IMAGE_ROT_90: imgFlags_t = 262144;
@@ -291,7 +294,7 @@ pub const ref_parm_e_PARM_PLAYING_DEMO: ref_parm_e = -7;
 pub const ref_parm_e_PARM_WATER_LEVEL: ref_parm_e = -8;
 pub const ref_parm_e_PARM_GET_WORLD_PTR: ref_parm_e = -9;
 pub const ref_parm_e_PARM_LOCAL_HEALTH: ref_parm_e = -10;
-pub const ref_parm_e_PARM_LOCAL_GAME: ref_parm_e = -11;
+pub const ref_parm_e_PARM_SINGLEPLAYER_GAME: ref_parm_e = -11;
 pub const ref_parm_e_PARM_NUMENTITIES: ref_parm_e = -12;
 pub const ref_parm_e_PARM_GET_MOVEVARS_PTR: ref_parm_e = -13;
 pub const ref_parm_e_PARM_GET_PALETTE_PTR: ref_parm_e = -14;
@@ -303,6 +306,7 @@ pub const ref_parm_e_PARM_GET_LINEARGAMMATABLE_PTR: ref_parm_e = -19;
 pub const ref_parm_e_PARM_GET_LIGHTSTYLES_PTR: ref_parm_e = -20;
 pub const ref_parm_e_PARM_GET_DLIGHTS_PTR: ref_parm_e = -21;
 pub const ref_parm_e_PARM_GET_ELIGHTS_PTR: ref_parm_e = -22;
+pub const ref_parm_e_PARM_GET_STUDIO_HDR: ref_parm_e = -23;
 pub const ref_parm_e_PARM_TEX_FILTERING: ref_parm_e = -65536;
 pub type ref_parm_e = ::core::ffi::c_int;
 #[repr(C)]
@@ -406,7 +410,11 @@ pub struct ref_api_s {
         ) -> qboolean,
     >,
     pub Mod_PointInLeaf: ::core::option::Option<
-        unsafe extern "C" fn(p: *const vec3_t, node: *mut mnode_t) -> *mut mleaf_t,
+        unsafe extern "C" fn(
+            p: *const vec3_t,
+            node: *mut mnode_t,
+            mod_: *mut model_s,
+        ) -> *mut mleaf_t,
     >,
     pub R_DrawWorldHull: ::core::option::Option<unsafe extern "C" fn()>,
     pub R_DrawModelHull: ::core::option::Option<unsafe extern "C" fn(mod_: *mut model_t)>,
@@ -490,16 +498,10 @@ pub struct ref_api_s {
     pub Mod_Calloc: ::core::option::Option<
         unsafe extern "C" fn(number: ::core::ffi::c_int, size: usize) -> *mut ::core::ffi::c_void,
     >,
-    pub pfnGetStudioModelInterface: ::core::option::Option<
-        unsafe extern "C" fn(
-            version: ::core::ffi::c_int,
-            ppinterface: *mut *mut r_studio_interface_s,
-            pstudio: *mut engine_studio_api_s,
-        ) -> ::core::ffi::c_int,
-    >,
     pub _Mem_AllocPool: ::core::option::Option<
         unsafe extern "C" fn(
             name: *const ::core::ffi::c_char,
+            flags: ::core::ffi::c_uint,
             filename: *const ::core::ffi::c_char,
             fileline: ::core::ffi::c_int,
         ) -> poolhandle_t,
@@ -674,6 +676,13 @@ pub struct ref_api_s {
             type_: ref_window_type_t,
         ) -> ref_window_type_t,
     >,
+    pub R_GetSpriteFrame: ::core::option::Option<
+        unsafe extern "C" fn(
+            pModel: *const model_s,
+            frame: ::core::ffi::c_int,
+            yaw: f32,
+        ) -> *mut mspriteframe_s,
+    >,
 }
 pub type ref_api_t = ref_api_s;
 #[repr(C)]
@@ -716,7 +725,6 @@ pub struct ref_interface_s {
     pub R_AddEntity: ::core::option::Option<
         unsafe extern "C" fn(clent: *mut cl_entity_s, type_: ::core::ffi::c_int) -> qboolean,
     >,
-    pub CL_AddCustomBeam: ::core::option::Option<unsafe extern "C" fn(pEnvBeam: *mut cl_entity_t)>,
     pub R_ProcessEntData: ::core::option::Option<
         unsafe extern "C" fn(
             allocate: qboolean,
@@ -724,7 +732,6 @@ pub struct ref_interface_s {
             max_entities: ::core::ffi::c_uint,
         ),
     >,
-    pub R_Flush: ::core::option::Option<unsafe extern "C" fn(flush_flags: ::core::ffi::c_uint)>,
     pub R_ShowTextures: ::core::option::Option<unsafe extern "C" fn()>,
     pub R_GetTextureOriginalBuffer:
         ::core::option::Option<unsafe extern "C" fn(idx: ::core::ffi::c_uint) -> *const byte>,
@@ -747,18 +754,6 @@ pub struct ref_interface_s {
     pub R_SetupSky:
         ::core::option::Option<unsafe extern "C" fn(skyboxTextures: *mut ::core::ffi::c_int)>,
     pub R_Set2DMode: ::core::option::Option<unsafe extern "C" fn(enable: qboolean)>,
-    pub R_DrawStretchRaw: ::core::option::Option<
-        unsafe extern "C" fn(
-            x: f32,
-            y: f32,
-            w: f32,
-            h: f32,
-            cols: ::core::ffi::c_int,
-            rows: ::core::ffi::c_int,
-            data: *const byte,
-            dirty: qboolean,
-        ),
-    >,
     pub R_DrawStretchPic: ::core::option::Option<
         unsafe extern "C" fn(
             x: f32,
@@ -832,7 +827,14 @@ pub struct ref_interface_s {
             angles: *mut vec3_t,
         ),
     >,
-    pub CL_InitStudioAPI: ::core::option::Option<unsafe extern "C" fn()>,
+    pub R_StudioFillAPI: ::core::option::Option<
+        unsafe extern "C" fn(
+            api: *mut engine_studio_api_s,
+            pDefaultDraw: *mut r_studio_interface_s,
+        ) -> qboolean,
+    >,
+    pub R_StudioSetDrawInterface:
+        ::core::option::Option<unsafe extern "C" fn(pDraw: *mut r_studio_interface_s)>,
     pub R_SetSkyCloudsTextures: ::core::option::Option<
         unsafe extern "C" fn(
             solidskyTexture: ::core::ffi::c_int,
@@ -842,21 +844,6 @@ pub struct ref_interface_s {
     pub GL_SubdivideSurface:
         ::core::option::Option<unsafe extern "C" fn(mod_: *mut model_t, fa: *mut msurface_t)>,
     pub CL_RunLightStyles: ::core::option::Option<unsafe extern "C" fn(ls: *mut lightstyle_t)>,
-    pub R_GetSpriteParms: ::core::option::Option<
-        unsafe extern "C" fn(
-            frameWidth: *mut ::core::ffi::c_int,
-            frameHeight: *mut ::core::ffi::c_int,
-            numFrames: *mut ::core::ffi::c_int,
-            currentFrame: ::core::ffi::c_int,
-            pSprite: *const model_t,
-        ),
-    >,
-    pub R_GetSpriteTexture: ::core::option::Option<
-        unsafe extern "C" fn(
-            m_pSpriteModel: *const model_t,
-            frame: ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
-    >,
     pub Mod_ProcessRenderData: ::core::option::Option<
         unsafe extern "C" fn(
             mod_: *mut model_t,
@@ -875,34 +862,24 @@ pub struct ref_interface_s {
         ::core::option::Option<unsafe extern "C" fn(frametime: f64, tracers: *mut particle_t)>,
     pub CL_DrawBeams:
         ::core::option::Option<unsafe extern "C" fn(fTrans: ::core::ffi::c_int, beams: *mut BEAM)>,
-    pub R_BeamCull: ::core::option::Option<
-        unsafe extern "C" fn(
-            start: *const vec3_t,
-            end: *const vec3_t,
-            pvsOnly: qboolean,
-        ) -> qboolean,
-    >,
     pub RefGetParm: ::core::option::Option<
-        unsafe extern "C" fn(
-            parm: ::core::ffi::c_int,
-            arg: ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
+        unsafe extern "C" fn(parm: ::core::ffi::c_int, arg: ::core::ffi::c_int) -> isize,
     >,
-    pub GetDetailScaleForTexture: ::core::option::Option<
+    pub R_GetDetailScaleForTexture: ::core::option::Option<
         unsafe extern "C" fn(texture: ::core::ffi::c_int, xScale: *mut f32, yScale: *mut f32),
     >,
-    pub GetExtraParmsForTexture: ::core::option::Option<
-        unsafe extern "C" fn(
-            texture: ::core::ffi::c_int,
-            red: *mut byte,
-            green: *mut byte,
-            blue: *mut byte,
-            alpha: *mut byte,
-        ),
+    pub R_SetDetailScaleForTexture: ::core::option::Option<
+        unsafe extern "C" fn(texture: ::core::ffi::c_int, xScale: f32, yScale: f32),
     >,
-    pub GetFrameTime: ::core::option::Option<unsafe extern "C" fn() -> f32>,
-    pub R_SetCurrentEntity: ::core::option::Option<unsafe extern "C" fn(ent: *mut cl_entity_s)>,
-    pub R_SetCurrentModel: ::core::option::Option<unsafe extern "C" fn(mod_: *mut model_s)>,
+    pub GL_CreateTexture: ::core::option::Option<
+        unsafe extern "C" fn(
+            name: *const ::core::ffi::c_char,
+            width: ::core::ffi::c_int,
+            height: ::core::ffi::c_int,
+            buffer: *const ::core::ffi::c_void,
+            flags: texFlags_t,
+        ) -> ::core::ffi::c_int,
+    >,
     pub GL_FindTexture: ::core::option::Option<
         unsafe extern "C" fn(name: *const ::core::ffi::c_char) -> ::core::ffi::c_int,
     >,
@@ -919,31 +896,6 @@ pub struct ref_interface_s {
             flags: ::core::ffi::c_int,
         ) -> ::core::ffi::c_int,
     >,
-    pub GL_CreateTexture: ::core::option::Option<
-        unsafe extern "C" fn(
-            name: *const ::core::ffi::c_char,
-            width: ::core::ffi::c_int,
-            height: ::core::ffi::c_int,
-            buffer: *const ::core::ffi::c_void,
-            flags: texFlags_t,
-        ) -> ::core::ffi::c_int,
-    >,
-    pub GL_LoadTextureArray: ::core::option::Option<
-        unsafe extern "C" fn(
-            names: *mut *const ::core::ffi::c_char,
-            flags: ::core::ffi::c_int,
-        ) -> ::core::ffi::c_int,
-    >,
-    pub GL_CreateTextureArray: ::core::option::Option<
-        unsafe extern "C" fn(
-            name: *const ::core::ffi::c_char,
-            width: ::core::ffi::c_int,
-            height: ::core::ffi::c_int,
-            depth: ::core::ffi::c_int,
-            buffer: *const ::core::ffi::c_void,
-            flags: texFlags_t,
-        ) -> ::core::ffi::c_int,
-    >,
     pub GL_FreeTexture: ::core::option::Option<unsafe extern "C" fn(texnum: ::core::ffi::c_uint)>,
     pub R_OverrideTextureSourceSize: ::core::option::Option<
         unsafe extern "C" fn(
@@ -952,64 +904,20 @@ pub struct ref_interface_s {
             srcHeight: ::core::ffi::c_uint,
         ),
     >,
-    pub DrawSingleDecal:
-        ::core::option::Option<unsafe extern "C" fn(pDecal: *mut decal_s, fa: *mut msurface_s)>,
-    pub R_DecalSetupVerts: ::core::option::Option<
+    pub GL_UpdateTexture: ::core::option::Option<
         unsafe extern "C" fn(
-            pDecal: *mut decal_s,
-            surf: *mut msurface_s,
-            texture: ::core::ffi::c_int,
-            outCount: *mut ::core::ffi::c_int,
-        ) -> *mut f32,
-    >,
-    pub R_EntityRemoveDecals: ::core::option::Option<unsafe extern "C" fn(mod_: *mut model_s)>,
-    pub AVI_UploadRawFrame: ::core::option::Option<
-        unsafe extern "C" fn(
-            texture: ::core::ffi::c_int,
+            texnum: ::core::ffi::c_int,
             cols: ::core::ffi::c_int,
             rows: ::core::ffi::c_int,
             width: ::core::ffi::c_int,
             height: ::core::ffi::c_int,
-            data: *const byte,
+            buffer: *const byte,
+            fmt: pixformat_t,
         ),
     >,
     pub GL_Bind: ::core::option::Option<
         unsafe extern "C" fn(tmu: ::core::ffi::c_int, texnum: ::core::ffi::c_uint),
     >,
-    pub GL_SelectTexture: ::core::option::Option<unsafe extern "C" fn(tmu: ::core::ffi::c_int)>,
-    pub GL_LoadTextureMatrix: ::core::option::Option<unsafe extern "C" fn(glmatrix: *const f32)>,
-    pub GL_TexMatrixIdentity: ::core::option::Option<unsafe extern "C" fn()>,
-    pub GL_CleanUpTextureUnits:
-        ::core::option::Option<unsafe extern "C" fn(last: ::core::ffi::c_int)>,
-    pub GL_TexGen: ::core::option::Option<
-        unsafe extern "C" fn(coord: ::core::ffi::c_uint, mode: ::core::ffi::c_uint),
-    >,
-    pub GL_TextureTarget: ::core::option::Option<unsafe extern "C" fn(target: ::core::ffi::c_uint)>,
-    pub GL_TexCoordArrayMode:
-        ::core::option::Option<unsafe extern "C" fn(texmode: ::core::ffi::c_uint)>,
-    pub GL_UpdateTexSize: ::core::option::Option<
-        unsafe extern "C" fn(
-            texnum: ::core::ffi::c_int,
-            width: ::core::ffi::c_int,
-            height: ::core::ffi::c_int,
-            depth: ::core::ffi::c_int,
-        ),
-    >,
-    pub GL_Reserved0: ::core::option::Option<unsafe extern "C" fn()>,
-    pub GL_Reserved1: ::core::option::Option<unsafe extern "C" fn()>,
-    pub GL_DrawParticles: ::core::option::Option<
-        unsafe extern "C" fn(rvp: *const ref_viewpass_s, trans_pass: qboolean, frametime: f32),
-    >,
-    pub LightVec: ::core::option::Option<
-        unsafe extern "C" fn(
-            start: *const f32,
-            end: *const f32,
-            lightspot: *mut f32,
-            lightvec: *mut f32,
-        ) -> colorVec,
-    >,
-    pub StudioGetTexture:
-        ::core::option::Option<unsafe extern "C" fn(e: *mut cl_entity_s) -> *mut mstudiotex_s>,
     pub GL_RenderFrame: ::core::option::Option<unsafe extern "C" fn(rvp: *const ref_viewpass_s)>,
     pub GL_OrthoBounds:
         ::core::option::Option<unsafe extern "C" fn(mins: *const f32, maxs: *const f32)>,
@@ -1019,9 +927,6 @@ pub struct ref_interface_s {
     pub Mod_GetCurrentVis: ::core::option::Option<unsafe extern "C" fn() -> *mut byte>,
     pub R_NewMap: ::core::option::Option<unsafe extern "C" fn()>,
     pub R_ClearScene: ::core::option::Option<unsafe extern "C" fn()>,
-    pub R_GetProcAddress: ::core::option::Option<
-        unsafe extern "C" fn(name: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_void,
-    >,
     pub TriRenderMode: ::core::option::Option<unsafe extern "C" fn(mode: ::core::ffi::c_int)>,
     pub Begin: ::core::option::Option<unsafe extern "C" fn(primitiveCode: ::core::ffi::c_int)>,
     pub End: ::core::option::Option<unsafe extern "C" fn()>,
@@ -1034,35 +939,12 @@ pub struct ref_interface_s {
             a: ::core::ffi::c_uchar,
         ),
     >,
-    pub TexCoord2f: ::core::option::Option<unsafe extern "C" fn(u: f32, v: f32)>,
     pub Vertex3fv: ::core::option::Option<unsafe extern "C" fn(worldPnt: *const f32)>,
     pub Vertex3f: ::core::option::Option<unsafe extern "C" fn(x: f32, y: f32, z: f32)>,
-    pub Fog: ::core::option::Option<
-        unsafe extern "C" fn(
-            flFogColor: *mut [f32; 3usize],
-            flStart: f32,
-            flEnd: f32,
-            bOn: ::core::ffi::c_int,
-        ),
-    >,
-    pub ScreenToWorld:
-        ::core::option::Option<unsafe extern "C" fn(screen: *const f32, world: *mut f32)>,
-    pub GetMatrix:
-        ::core::option::Option<unsafe extern "C" fn(pname: ::core::ffi::c_int, matrix: *mut f32)>,
-    pub FogParams: ::core::option::Option<
-        unsafe extern "C" fn(flDensity: f32, iFogSkybox: ::core::ffi::c_int),
-    >,
     pub CullFace: ::core::option::Option<unsafe extern "C" fn(mode: TRICULLSTYLE)>,
+    pub R_FillRenderAPI: ::core::option::Option<unsafe extern "C" fn(api: *mut render_api_s)>,
+    pub R_FillTriAPI: ::core::option::Option<unsafe extern "C" fn(api: *mut triangleapi_s)>,
     pub VGUI_SetupDrawing: ::core::option::Option<unsafe extern "C" fn(rect: qboolean)>,
-    pub VGUI_UploadTextureBlock: ::core::option::Option<
-        unsafe extern "C" fn(
-            drawX: ::core::ffi::c_int,
-            drawY: ::core::ffi::c_int,
-            rgba: *const byte,
-            blockWidth: ::core::ffi::c_int,
-            blockHeight: ::core::ffi::c_int,
-        ),
-    >,
 }
 pub type ref_interface_t = ref_interface_s;
 pub type REFAPI = ::core::option::Option<

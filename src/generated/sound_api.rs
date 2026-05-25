@@ -147,12 +147,34 @@ pub struct snd_globals_s {
 }
 pub type snd_globals_t = snd_globals_s;
 #[repr(C)]
+pub struct voice_audio_info_s {
+    pub width: uint,
+    pub samplerate: uint,
+    pub frame_size: uint,
+}
+pub type voice_audio_info_t = voice_audio_info_s;
+#[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct sound_api_s {
     pub CL_GetEntitySpatialization:
         ::core::option::Option<unsafe extern "C" fn(ch: *mut channel_t) -> qboolean>,
     pub S_GetSfxByHandle:
         ::core::option::Option<unsafe extern "C" fn(handle: sound_t) -> *mut sfx_t>,
+    pub pfnS_RawEntSamples: ::core::option::Option<
+        unsafe extern "C" fn(
+            entnum: ::core::ffi::c_int,
+            samples: uint,
+            rate: uint,
+            width: word,
+            channels: word,
+            data: *const byte,
+            snd_vol: ::core::ffi::c_int,
+            attn: f32,
+        ),
+    >,
+    pub pfnSND_ForceInitMouth:
+        ::core::option::Option<unsafe extern "C" fn(entnum: ::core::ffi::c_int)>,
+    pub pfnVoice_GetAudioInfo: ::core::option::Option<unsafe extern "C" fn() -> voice_audio_info_t>,
 }
 pub type sound_api_t = sound_api_s;
 #[repr(C)]

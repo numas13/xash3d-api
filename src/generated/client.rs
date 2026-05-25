@@ -789,5 +789,12 @@ pub struct cldll_func_s {
             callback: *mut sound_interface_t,
         ) -> ::core::ffi::c_int,
     >,
+    pub pfnVoice_StartChannel: ::core::option::Option<
+        unsafe extern "C" fn(
+            samples: ::core::ffi::c_int,
+            data: *mut byte,
+            entnum: ::core::ffi::c_int,
+        ) -> ::core::ffi::c_int,
+    >,
 }
 pub type cldll_func_t = cldll_func_s;

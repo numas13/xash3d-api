@@ -270,5 +270,14 @@ pub struct physics_interface_s {
     pub SV_PlayerThink: ::core::option::Option<
         unsafe extern "C" fn(ent: *mut edict_t, frametime: f32, time: f64) -> ::core::ffi::c_int,
     >,
+    pub pfnVoiceData: ::core::option::Option<
+        unsafe extern "C" fn(
+            client: ::core::ffi::c_int,
+            frames: uint,
+            size: uint,
+            loopback: qboolean,
+            received: *const ::core::ffi::c_char,
+        ) -> qboolean,
+    >,
 }
 pub type physics_interface_t = physics_interface_s;

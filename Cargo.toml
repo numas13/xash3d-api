@@ -5,7 +5,7 @@ keywords = ["gamedev", "ffi", "bindings"]
 categories = ["api-bindings", "game-development"]
 version = "0.2.1"
 license = "MIT"
-rust-version = "1.68"
+rust-version = "1.68.2"
 edition = "2021"
 repository = "https://github.com/numas13/xash3d-ffi"
 authors = ["Denis Drakhnia <numas13@gmail.com>"]
@@ -83,4 +83,4 @@ all-features = true
 [dependencies]
 libc = { version = "0.2", default-features = false }
 libm = { version = "0.2", optional = true }
-glam = { version = "0.30.8", default-features = false, optional = true }
+glam = { version = "0.33", default-features = false, optional = true }

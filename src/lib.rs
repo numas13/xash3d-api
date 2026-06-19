@@ -35,3 +35,6 @@ pub mod menu;
 
 #[cfg(feature = "render")]
 pub mod render;
+
+#[cfg(feature = "glam")]
+pub use glam;

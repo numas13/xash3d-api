@@ -4,6 +4,7 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(clippy::type_complexity)]
+#![cfg_attr(all(doc, docsrs), feature(doc_cfg))]
 
 #[cfg(feature = "std")]
 extern crate std;

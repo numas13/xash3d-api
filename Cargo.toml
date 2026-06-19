@@ -9,7 +9,14 @@ rust-version = "1.68.2"
 edition = "2021"
 repository = "https://github.com/numas13/xash3d-ffi"
 authors = ["Denis Drakhnia <numas13@gmail.com>"]
-exclude = ["xash3d-fwgs"]
+exclude = [
+    ".github",
+    ".gitmodules",
+    ".justfile",
+    "generate.sh",
+    "include",
+    "xash3d-fwgs",
+]
 
 [features]
 default = ["all"]

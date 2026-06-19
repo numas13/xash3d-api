@@ -30,6 +30,8 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.toolchain }}
+      - run: cargo check --all-targets
+      - run: cargo check --all-targets --no-default-features
       - run: cargo check --all-targets --all-features
 
   check-style:
@@ -52,3 +54,12 @@ jobs:
         with:
           components: clippy
       - run: cargo clippy --all-targets --all-features
+
+  tests:
+    name: Tests
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo test --all-features

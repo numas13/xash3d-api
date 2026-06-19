@@ -19,7 +19,7 @@ jobs:
           tag: ${{ github.ref_name }}
         run: |
           gh release create "$tag" \
-              --title "xash3d-ffi $tag" \
+              --title "xash3d-api $tag" \
               --target "$GITHUB_SHA" \
               --repo "$GITHUB_REPOSITORY" \
               --generate-notes

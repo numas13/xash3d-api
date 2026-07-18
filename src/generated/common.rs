@@ -842,7 +842,7 @@ pub type con_nprint_t = con_nprint_s;
 #[repr(C)]
 pub struct usercmd_s {
     pub lerp_msec: i16,
-    pub msec: i8,
+    pub msec: u8,
     pub pad1: u8,
     pub viewangles: vec3_t,
     pub forwardmove: f32,

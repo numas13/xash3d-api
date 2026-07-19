@@ -20,5 +20,4 @@ features = [
     "tri-api",
     "event-api",
     "efx-api",
-    "sound-api",
 ]

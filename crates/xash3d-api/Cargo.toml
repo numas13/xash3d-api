@@ -25,7 +25,6 @@ net-api = []
 tri-api = []
 event-api = ["player-move"]
 efx-api = []
-sound-api = []
 
 [dependencies]
 libc = { version = "0.2", default-features = false }

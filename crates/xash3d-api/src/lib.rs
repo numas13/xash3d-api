@@ -48,14 +48,6 @@ pub mod tri {
     include!("generated/tri_api.rs");
 }
 
-#[cfg(feature = "event-api")]
-pub mod event {
-    use crate::common::*;
-    use crate::player_move::*;
-
-    include!("generated/event_api.rs");
-}
-
 #[cfg(feature = "player-move")]
 pub mod player_move {
     use crate::common::*;

@@ -18,5 +18,4 @@ features = [
     "render-api",
     "net-api",
     "tri-api",
-    "event-api",
 ]

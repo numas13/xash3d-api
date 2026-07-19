@@ -6,6 +6,13 @@
 #![allow(clippy::type_complexity)]
 #![cfg_attr(all(doc, docsrs), feature(doc_cfg))]
 
+pub mod event {
+    use xash3d_api::common::*;
+    use xash3d_api::player_move::*;
+
+    include!("generated/event_api.rs");
+}
+
 pub mod efx {
     use xash3d_api::common::*;
 
@@ -22,7 +29,6 @@ pub mod sound {
 use core::{ffi::c_int, mem};
 
 use xash3d_api::common::*;
-use xash3d_api::event::*;
 use xash3d_api::net::*;
 use xash3d_api::player_move::*;
 use xash3d_api::render::*;
@@ -30,6 +36,7 @@ use xash3d_api::studio::*;
 use xash3d_api::tri::*;
 
 use crate::efx::*;
+use crate::event::*;
 use crate::sound::*;
 
 include!("generated/client.rs");

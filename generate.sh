@@ -112,10 +112,6 @@ generate "wrapper-render-api.h" "crates/xash3d-api/src/generated/render_api.rs" 
     --allowlist-file "xash3d-fwgs/common/lightstyle.h" \
     --allowlist-file "xash3d-fwgs/common/render_api.h"
 
-generate "wrapper-event-api.h" "crates/xash3d-api/src/generated/event_api.rs" \
-    --no-recursive-allowlist \
-    --allowlist-file "xash3d-fwgs/common/event_api.h"
-
 ##############################################################################
 # xash3d-api-server
 ##############################################################################
@@ -143,6 +139,10 @@ generate "wrapper-phys-api.h" "crates/xash3d-api-phys/src/generated/phys_api.rs"
 generate "wrapper-efx-api.h" "crates/xash3d-api-client/src/generated/efx_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/r_efx.h"
+
+generate "wrapper-event-api.h" "crates/xash3d-api-client/src/generated/event_api.rs" \
+    --no-recursive-allowlist \
+    --allowlist-file "xash3d-fwgs/common/event_api.h"
 
 generate "wrapper-sound-api.h" "crates/xash3d-api-client/src/generated/sound_api.rs" \
     --no-recursive-allowlist \

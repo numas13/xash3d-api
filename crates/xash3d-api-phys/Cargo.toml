@@ -1,0 +1,15 @@
+[package]
+name = "xash3d-api-phys"
+description = "Phys extension FFI definitions for Xash3D FWGS engine"
+keywords = ["xash3d", "gamedev", "ffi", "bindings"]
+categories = ["api-bindings", "game-development"]
+version = "0.1.0"
+license.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+xash3d-api = { workspace = true, features = ["player-move", "tri-api", "render-api"] }
+xash3d-api-server.workspace = true

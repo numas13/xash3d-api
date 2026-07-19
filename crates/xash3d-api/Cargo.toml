@@ -1,0 +1,36 @@
+[package]
+name = "xash3d-api"
+description = "Common FFI definitions for Xash3D FWGS engine"
+keywords = ["xash3d", "gamedev", "ffi", "bindings"]
+categories = ["api-bindings", "game-development"]
+version = "0.2.0"
+license.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[features]
+## The std feature enables using of Rust's standard library
+std = ["glam?/std"]
+## The libm feature enables additional methods for vectors in no-std environments
+libm = ["dep:libm", "glam?/libm"]
+## The glam feature enables using glam crate for vec2_t, vec3_t and vec4_t
+glam = ["dep:glam"]
+
+player-move = []
+studio-api = []
+render-api = ["studio-api"]
+net-api = []
+tri-api = []
+event-api = ["player-move"]
+efx-api = []
+sound-api = []
+
+[dependencies]
+libc = { version = "0.2", default-features = false }
+libm = { version = "0.2", optional = true }
+glam = { version = "0.33", default-features = false, optional = true }
+
+[package.metadata.docs.rs]
+all-features = true

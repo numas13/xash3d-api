@@ -25,9 +25,45 @@ checksum = "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981"
 
 [[package]]
 name = "xash3d-api"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "glam",
  "libc",
  "libm",
+]
+
+[[package]]
+name = "xash3d-api-client"
+version = "0.1.0"
+dependencies = [
+ "xash3d-api",
+]
+
+[[package]]
+name = "xash3d-api-menu"
+version = "0.1.0"
+dependencies = [
+ "xash3d-api",
+]
+
+[[package]]
+name = "xash3d-api-phys"
+version = "0.1.0"
+dependencies = [
+ "xash3d-api",
+ "xash3d-api-server",
+]
+
+[[package]]
+name = "xash3d-api-ref"
+version = "0.1.0"
+dependencies = [
+ "xash3d-api",
+]
+
+[[package]]
+name = "xash3d-api-server"
+version = "0.1.0"
+dependencies = [
+ "xash3d-api",
 ]

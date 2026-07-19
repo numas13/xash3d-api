@@ -1,4 +1,23 @@
-//! Bindings to shared APIs.
+#![doc = include_str!("../README.md")]
+#![no_std]
+#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+#![allow(clippy::type_complexity)]
+#![cfg_attr(all(doc, docsrs), feature(doc_cfg))]
+
+#[cfg(feature = "std")]
+extern crate std;
+
+#[macro_use]
+mod macros;
+
+pub mod common;
+
+pub mod keys {
+    //! Key numbers definitions.
+    include!("generated/keys.rs");
+}
 
 #[cfg(feature = "studio-api")]
 pub mod studio {
@@ -9,8 +28,8 @@ pub mod studio {
 
 #[cfg(feature = "render-api")]
 pub mod render {
-    use crate::api::studio::*;
     use crate::common::*;
+    use crate::studio::*;
 
     include!("generated/render_api.rs");
 }
@@ -20,13 +39,6 @@ pub mod net {
     use crate::common::*;
 
     include!("generated/net_api.rs");
-}
-
-#[cfg(feature = "fs-api")]
-pub mod fs {
-    use crate::common::*;
-
-    include!("generated/fs_api.rs");
 }
 
 #[cfg(feature = "tri-api")]
@@ -51,27 +63,6 @@ pub mod efx {
     include!("generated/efx_api.rs");
 }
 
-#[cfg(feature = "phys-api")]
-pub mod phys {
-    use crate::common::*;
-    use crate::player_move::*;
-
-    use crate::api::render::*;
-    use crate::api::tri::*;
-
-    use crate::server::SAVERESTOREDATA;
-
-    include!("generated/phys_api.rs");
-
-    pub type PHYSICAPI = Option<
-        unsafe extern "C" fn(
-            version: core::ffi::c_int,
-            eng_funcs: *mut server_physics_api_t,
-            dll_funcs: *mut physics_interface_t,
-        ) -> core::ffi::c_int,
-    >;
-}
-
 #[allow(clippy::missing_safety_doc)]
 #[cfg(feature = "sound-api")]
 pub mod sound {
@@ -79,3 +70,13 @@ pub mod sound {
 
     include!("generated/sound_api.rs");
 }
+
+#[cfg(feature = "player-move")]
+pub mod player_move {
+    use crate::common::*;
+
+    include!("generated/player_move.rs");
+}
+
+#[cfg(feature = "glam")]
+pub use glam;

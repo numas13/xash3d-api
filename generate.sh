@@ -44,6 +44,7 @@ function generate() {
     output="$2"
     shift 2
     echo "generate $output ($wrapper_h)"
+    mkdir -p "$(dirname "$output")"
     bindgen \
         "include/$wrapper_h" \
         --rust-target $MSRV \
@@ -74,69 +75,61 @@ function generate() {
 # common definitions
 ##############################################################################
 
-generate "wrapper-common.h" "src/generated/common.rs" \
+generate "wrapper-common.h" "crates/xash3d-api/src/generated/common.rs" \
     --allowlist-file "xash3d-fwgs/.*" \
     --blocklist-type "netadr_s" \
     --blocklist-type "mstudio.*" \
     --blocklist-var "ATTN_NONE"
 
-generate "wrapper-keys.h" "src/generated/keys.rs" \
+generate "wrapper-keys.h" "crates/xash3d-api/src/generated/keys.rs" \
     --allowlist-file "xash3d-fwgs/.*"
 
 ##############################################################################
-# shared apis
+# xash3d-api
 ##############################################################################
 
-generate "wrapper-player-move.h" "src/generated/player_move.rs" \
+generate "wrapper-player-move.h" "crates/xash3d-api/src/generated/player_move.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/pm_shared/pm_defs.h"
 
-generate "wrapper-net-api.h" "src/generated/net_api.rs" \
+generate "wrapper-net-api.h" "crates/xash3d-api/src/generated/net_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/net_api.h"
 
-generate "wrapper-studio-api.h" "src/generated/studio_api.rs" \
+generate "wrapper-studio-api.h" "crates/xash3d-api/src/generated/studio_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/r_studioint.h" \
     --allowlist-file "xash3d-fwgs/common/studio_event.h" \
     --allowlist-file "xash3d-fwgs/engine/studio.h"
 
-generate "wrapper-tri-api.h" "src/generated/tri_api.rs" \
+generate "wrapper-tri-api.h" "crates/xash3d-api/src/generated/tri_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/triangleapi.h"
 
-generate "wrapper-render-api.h" "src/generated/render_api.rs" \
+generate "wrapper-render-api.h" "crates/xash3d-api/src/generated/render_api.rs" \
     --no-recursive-allowlist \
     --blocklist-type "dlight_s" \
     --allowlist-file "xash3d-fwgs/common/lightstyle.h" \
     --allowlist-file "xash3d-fwgs/common/render_api.h"
 
-generate "wrapper-fs-api.h" "src/generated/fs_api.rs" \
-    --no-recursive-allowlist \
-    --allowlist-file "xash3d-fwgs/filesystem/filesystem.h"
-
-generate "wrapper-event-api.h" "src/generated/event_api.rs" \
+generate "wrapper-event-api.h" "crates/xash3d-api/src/generated/event_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/event_api.h"
 
-generate "wrapper-efx-api.h" "src/generated/efx_api.rs" \
+generate "wrapper-efx-api.h" "crates/xash3d-api/src/generated/efx_api.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/r_efx.h"
 
-generate "wrapper-phys-api.h" "src/generated/phys_api.rs" \
-    --no-recursive-allowlist \
-    --allowlist-file "xash3d-fwgs/engine/physint.h"
-
-generate "wrapper-sound-api.h" "src/generated/sound_api.rs" \
+generate "wrapper-sound-api.h" "crates/xash3d-api/src/generated/sound_api.rs" \
     --no-recursive-allowlist \
     --allowlist-type "wavdata_[st]" \
     --allowlist-file "xash3d-fwgs/common/sound_api.h"
 
 ##############################################################################
-# dlls
+# xash3d-api-server
 ##############################################################################
 
-generate "wrapper-server.h" "src/generated/server.rs" \
+generate "wrapper-server.h" "crates/xash3d-api-server/src/generated/server.rs" \
     --no-recursive-allowlist \
     --allowlist-type "edict_t" \
     --allowlist-type "delta_s" \
@@ -144,19 +137,43 @@ generate "wrapper-server.h" "src/generated/server.rs" \
     --allowlist-file "xash3d-fwgs/engine/edict.h" \
     --allowlist-file "xash3d-fwgs/engine/eiface.h"
 
-generate "wrapper-client.h" "src/generated/client.rs" \
+##############################################################################
+# xash3d-api-phys
+##############################################################################
+
+generate "wrapper-phys-api.h" "crates/xash3d-api-phys/src/generated/phys_api.rs" \
+    --no-recursive-allowlist \
+    --allowlist-file "xash3d-fwgs/engine/physint.h"
+
+##############################################################################
+# xash3d-api-client
+##############################################################################
+
+generate "wrapper-client.h" "crates/xash3d-api-client/src/generated/client.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/ivoicetweak.h" \
     --allowlist-file "xash3d-fwgs/common/demo_api.h" \
     --allowlist-file "xash3d-fwgs/engine/cdll_int.h" \
     --allowlist-file "xash3d-fwgs/engine/cdll_exp.h"
 
-generate "wrapper-menu.h" "src/generated/menu.rs" \
+##############################################################################
+# xash3d-api-menu
+##############################################################################
+
+generate "wrapper-menu.h" "crates/xash3d-api-menu/src/generated/menu.rs" \
     --no-recursive-allowlist \
     --allowlist-file "xash3d-fwgs/common/gameinfo.h" \
     --allowlist-file "xash3d-fwgs/engine/menu_int.h"
 
-generate "wrapper-render.h" "src/generated/render.rs" \
+##############################################################################
+# xash3d-api-ref
+##############################################################################
+
+generate "wrapper-fs-api.h" "crates/xash3d-api-ref/src/generated/fs_api.rs" \
+    --no-recursive-allowlist \
+    --allowlist-file "xash3d-fwgs/filesystem/filesystem.h"
+
+generate "wrapper-render.h" "crates/xash3d-api-ref/src/generated/render.rs" \
     --no-recursive-allowlist \
     --allowlist-type "convar_[st]" \
     --allowlist-file "xash3d-fwgs/common/com_image.h" \

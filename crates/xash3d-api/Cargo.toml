@@ -24,7 +24,6 @@ render-api = ["studio-api"]
 net-api = []
 tri-api = []
 event-api = ["player-move"]
-efx-api = []
 
 [dependencies]
 libc = { version = "0.2", default-features = false }
